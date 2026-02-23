@@ -21,3 +21,10 @@ def delete_task(task_id: int):
         if task_id == task.id:
             tasks.remove(task)
     return tasks
+
+@app.put("/tasks/{task_id}")
+def put_task(task_id: int, task: Task):
+    for index, t in enumerate(tasks):
+        if task_id == t.id:
+            tasks[index] = task
+    return task
