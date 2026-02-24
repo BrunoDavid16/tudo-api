@@ -20,3 +20,12 @@ class TaskModel(Base):
     completa = Column(Boolean)
     descricao = Column(String)
 
+class Usuario(BaseModel):
+    email: str
+    senha: str
+
+class UsuarioModel(Base):
+    __tablename__ = "usuarios"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    email = Column(String, unique=True)
+    senha_hash = Column(String)

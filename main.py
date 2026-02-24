@@ -1,7 +1,7 @@
-from models import Task, TaskModel
 from database import SessionLocal, engine
 from fastapi import FastAPI
-
+from auth import hash_senha, verificar_senha, criar_token
+from models import Task, TaskModel, Usuario, UsuarioModel
 
 app = FastAPI()
 
@@ -39,3 +39,21 @@ def put_task(task_id: int, task: Task):
     db.commit()
     db.close()
     return db_task
+
+@app.post("/register")
+def registrar(usuario: Usuario):
+    db = SessionLocal()
+    db_usuario = UsuarioModel(email=usuario.email, senha_hash=hash_senha(usuario.senha))
+    db.add(db_usuario)
+    db.commit()
+    db.close()
+    return usuario
+
+@app.post("/login")
+def login(usuario: Usuario):
+    db = SessionLocal()
+    db_usuario = db.query(UsuarioModel).filter(UsuarioModel.email == usuario.email).first()
+    if not verificar_senha(usuario.senha, db_usuario.senha_hash):
+        return {"erro": "Senha incorreta"}
+    token = criar_token({"sub": usuario.email})
+    return {"access_token": token}
